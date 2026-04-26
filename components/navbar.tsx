@@ -10,9 +10,9 @@ export default function Navbar({
   const tabs = ["HOME", "STACK", "PROJECTS", "WHOAMI", "CONTACT"];
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50 px-4 pt-3 pointer-events-none">
-      <nav className="max-w-5xl mx-auto flex justify-between items-center pointer-events-auto">
-        <div className="flex gap-1">
+    <header className="fixed top-0 left-0 w-full z-50 px-2 sm:px-4 pt-3 pointer-events-none">
+      <nav className="max-w-5xl mx-auto flex justify-between items-center pointer-events-auto overflow-x-auto hide-scrollbar gap-4">
+        <div className="flex gap-1 shrink-0">
           {tabs.map((tab, idx) => {
             const isActive = idx === activeSection;
             const isFirst = idx === 0;
@@ -41,7 +41,7 @@ export default function Navbar({
           </div>
         </div>
 
-        <div className="flex gap-1">
+        <div className="flex gap-1 shrink-0 ml-auto">
           <div className="waybar-module rounded-l-md border-primary/20">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
             <span className="hidden sm:inline">OPEN_TO_WORK</span>
