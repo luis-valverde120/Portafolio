@@ -112,11 +112,14 @@ export default function ProjectView({ project, data }: ProjectViewProps) {
                   <span className="text-[#a855f7] font-bold">&gt;</span> <span className="text-white">./execute_links.sh</span>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4">
-                  {data.links.map((link: string, idx: number) => (
-                    <button key={idx} className="border border-[#a855f7]/50 hover:border-[#a855f7] hover:bg-[#a855f7]/10 text-white px-4 py-3 transition-all text-xs font-bold tracking-widest uppercase text-left group">
-                      <span className="text-[#a855f7] mr-2 group-hover:animate-pulse">[ ✓ ]</span> {link}
-                    </button>
-                  ))}
+                  <a 
+                    href={data.githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="border border-[#a855f7]/50 hover:border-[#a855f7] hover:bg-[#a855f7]/10 text-white px-4 py-3 transition-all text-xs font-bold tracking-widest uppercase text-left group"
+                  >
+                    <span className="text-[#a855f7] mr-2 group-hover:animate-pulse">[ ✓ ]</span> View Source Code on GitHub
+                  </a>
                 </div>
               </div>
 
