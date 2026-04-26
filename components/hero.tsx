@@ -6,7 +6,11 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import WindowHeader from "./window-header";
 
-export default function Hero() {
+interface HeroProps {
+  onNavigate?: (index: number) => void;
+}
+
+export default function Hero({ onNavigate }: HeroProps) {
   const containerRef = useRef(null);
   const titleRef = useRef(null);
 
@@ -61,18 +65,18 @@ export default function Hero() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 font-mono text-xs uppercase tracking-widest mt-auto hero-element">
-            <Link
-              href="#projects"
-              className="border border-[#a855f7] text-[#a855f7] hover:bg-[#a855f7]/10 px-6 py-3 font-bold transition-all text-center"
+            <button
+              onClick={() => onNavigate?.(2)}
+              className="border border-[#a855f7] text-[#a855f7] hover:bg-[#a855f7]/10 px-6 py-3 font-bold transition-all text-center cursor-pointer"
             >
               [ Execute Projects ]
-            </Link>
-            <Link
-              href="#contact"
-              className="border border-white/30 hover:border-white text-white px-6 py-3 transition-all text-center"
+            </button>
+            <button
+              onClick={() => onNavigate?.(4)}
+              className="border border-white/30 hover:border-white text-white px-6 py-3 transition-all text-center cursor-pointer"
             >
               Contact Me
-            </Link>
+            </button>
           </div>
         </div>
       </div>

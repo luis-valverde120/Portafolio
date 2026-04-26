@@ -325,7 +325,7 @@ export default function Home() {
               className="hero-window flex items-center justify-center overflow-hidden"
               style={{ width: "60%", height: "60%", margin: "auto" }}
             >
-              <Hero />
+              <Hero onNavigate={handleNavigate} />
             </div>
           </div>
 
