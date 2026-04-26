@@ -2,7 +2,7 @@ import WindowHeader from "./window-header";
 
 export default function Stack() {
   return (
-    <div className="architect-panel w-full h-full overflow-y-auto relative flex flex-col font-mono text-sm">
+    <div className="bg-black/40 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl stack-window-panel w-full h-full overflow-y-auto relative flex flex-col font-mono text-sm">
       <WindowHeader
         title="~/luis-valverde/tech_stack"
         className="sticky top-0 z-10"

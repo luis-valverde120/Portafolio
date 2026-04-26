@@ -4,12 +4,7 @@ import Link from "next/link";
 import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { TextPlugin } from "gsap/TextPlugin";
 import WindowHeader from "./window-header";
-
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(TextPlugin, useGSAP);
-}
 
 export default function Hero() {
   const containerRef = useRef(null);
@@ -17,7 +12,7 @@ export default function Hero() {
 
   useGSAP(
     () => {
-      // 1. Animación de "Máquina de escribir" para el título
+      // Escritura automática
       gsap.to(titleRef.current, {
         duration: 2.2,
         text: "Engineering Scalable <br/> Backend Systems.",
@@ -25,55 +20,50 @@ export default function Hero() {
         delay: 0.5,
       });
 
-      // 2. Aparición suave (Fade in) para el párrafo y los botones
+      // Elementos secundarios
       gsap.from(".hero-element", {
         y: 20,
         opacity: 0,
         duration: 1,
         stagger: 0.2,
         ease: "power2.out",
-        delay: 2.8, // Esperamos a que termine de escribirse el título
+        delay: 2.8,
       });
     },
     { scope: containerRef },
   );
 
   return (
-    // Contenedor totalmente fluido, el tamaño lo dicta page.tsx
     <div
       ref={containerRef}
       className="w-full h-full flex items-center justify-center"
     >
-      {/* El panel con hero-window-panel para que page.tsx pueda cambiarle el color del borde */}
-      <div className="architect-panel hero-window-panel w-full h-full overflow-hidden relative flex flex-col group border border-white/20 transition-colors duration-300">
-        {/* Componente reutilizable del header */}
+      <div className="bg-black/40 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl hero-window-panel w-full h-full overflow-hidden relative flex flex-col group">
         <WindowHeader title="~/luis-valverde/system" />
 
-        {/* CONTENIDO: flex-1 y overflow-y-auto son críticos para que no se rompa cuando se encoge */}
         <div className="p-6 md:p-10 flex-1 overflow-y-auto flex flex-col justify-center">
-          <div className="mb-6 font-mono text-sm hero-element">
-            <span className="text-primary">&gt;</span>
+          <div className="mb-4 font-mono text-xs md:text-sm hero-element">
+            <span className="text-[#a855f7]">&gt;</span>
             <span className="text-muted ml-2">./execute_intro.sh</span>
           </div>
 
-          {/* Título animado: suppressHydrationWarning evita errores de React con GSAP */}
           <h1
             ref={titleRef}
             suppressHydrationWarning
-            className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 tracking-tighter leading-[1.1] font-sans min-h-[96px] md:min-h-[120px]"
+            className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-6 tracking-tighter leading-tight font-sans min-h-[80px]"
           >
             _
           </h1>
 
-          <p className="text-muted text-base md:text-lg font-sans mb-10 leading-relaxed max-w-2xl hero-element">
+          <p className="text-muted text-sm md:text-lg font-sans mb-8 leading-relaxed max-w-2xl hero-element">
             I’m a Software Engineer and a 7th-semester Computer Science student
             at UPEC, focused on designing secure and scalable backend systems.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 font-mono text-xs md:text-sm uppercase tracking-widest mt-auto hero-element shrink-0">
+          <div className="flex flex-col sm:flex-row gap-4 font-mono text-xs uppercase tracking-widest mt-auto hero-element">
             <Link
               href="#projects"
-              className="border border-primary text-primary hover:bg-primary/10 px-6 py-3 font-bold transition-all text-center"
+              className="border border-[#a855f7] text-[#a855f7] hover:bg-[#a855f7]/10 px-6 py-3 font-bold transition-all text-center"
             >
               [ Execute Projects ]
             </Link>

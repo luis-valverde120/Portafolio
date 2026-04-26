@@ -1,151 +1,355 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { TextPlugin } from "gsap/TextPlugin";
 
 import Hero from "@/components/hero";
 import Stack from "@/components/stack";
 import Navbar from "@/components/navbar";
 import WindowHeader from "@/components/window-header";
+import Projects from "@/components/projects";
+import About from "@/components/about";
+import Contact from "@/components/contact";
 
 if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger, useGSAP);
+  gsap.registerPlugin(ScrollTrigger, TextPlugin);
 }
 
 export default function Home() {
-  const containerRef = useRef(null);
-  const twmRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const twmRef = useRef<HTMLElement>(null);
+  const [activePhase, setActivePhase] = useState(0);
+
+  const handleNavigate = (index: number) => {
+    const times = [0, 1, 2.5, 4, 5.5];
+    const targetScroll = times[index] * 1000;
+    
+    window.scrollTo({
+      top: (twmRef.current?.offsetTop || 0) + targetScroll,
+      behavior: "smooth"
+    });
+  };
 
   useGSAP(
     () => {
+      // Estado inicial de los bordes
       gsap.set(".hero-window-panel", {
         borderColor: "#a855f7",
         boxShadow: "0 0 15px rgba(168,85,247,0.2)",
+        borderWidth: "1px",
       });
       gsap.set(".stack-window-panel, .projects-window-panel", {
         borderColor: "rgba(255,255,255,0.2)",
         boxShadow: "none",
+        borderWidth: "1px",
+      });
+
+      // Estado inicial de las ventanas (Posición)
+      gsap.set(".right-workspace", { autoAlpha: 0, width: "0%" });
+      gsap.set(".projects-window", { 
+        autoAlpha: 0, 
+        width: "calc(50% - 0.5rem)", 
+        height: "calc(50% - 0.5rem)",
+        left: "0%",
+        top: "calc(50% + 0.5rem)",
+        xPercent: 0,
+        yPercent: 0
+      });
+      gsap.set(".about-window", { 
+        autoAlpha: 0, 
+        scale: 0.9, 
+        y: 50 
+      });
+      gsap.set(".contact-window", { 
+        autoAlpha: 0, 
+        scale: 0.9, 
+        y: 50 
+      });
+
+      // Estado inicial de los bordes para que GSAP pueda interpolar correctamente
+      gsap.set(".hero-window-panel", {
+        borderColor: "#a855f7",
+        boxShadow: "0 0 15px rgba(168,85,247,0.2)"
+      });
+      gsap.set(".stack-window-panel, .projects-window-panel, .about-window-panel, .contact-window-panel", {
+        borderColor: "rgba(255,255,255,0.2)",
+        boxShadow: "none"
       });
 
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: twmRef.current,
           start: "top top",
-          end: "+=2000",
+          end: "+=5500",
           scrub: 1,
           pin: true,
+          anticipatePin: 1,
+          // Importante: pinSpacing true (default) para que cree el espacio
+          // necesario para el scroll.
+          onUpdate: (self) => {
+            const time = self.progress * 5.5; // Calcula el tiempo actual de la timeline (max 5.5)
+            if (time < 0.5) setActivePhase(0);
+            else if (time < 1.75) setActivePhase(1);
+            else if (time < 3.25) setActivePhase(2);
+            else if (time < 4.75) setActivePhase(3);
+            else setActivePhase(4);
+          }
         },
       });
 
-      // FASE 1: División Vertical (Izquierda al 50%, Derecha aparece al 50%)
-      tl.to(".left-workspace", { width: "50%", ease: "none" }, 0)
-        // El Hero crece para llenar su nueva zona izquierda (pasa del 60% al 100%)
-        .to(".hero-window", { width: "100%", height: "100%", ease: "none" }, 0)
-        // Pierde focus
+      // ──── FASE 1: Hero Arriba-Izq, Stack Derecha, Proyectos Abajo-Izq ────
+      tl.to(
+        ".left-workspace",
+        { width: "50%", ease: "power2.inOut", duration: 1 },
+        0,
+      )
         .to(
-          ".hero-window-panel",
-          { borderColor: "rgba(255,255,255,0.2)", boxShadow: "none" },
+          ".hero-window",
+          { 
+            width: "100%", 
+            height: "calc(50% - 0.5rem)", 
+            marginTop: 0, 
+            marginBottom: "auto", 
+            ease: "power2.inOut", 
+            duration: 1 
+          },
           0,
         )
-        // Aparece la derecha (Stack)
-        .to(".right-workspace", { width: "50%", opacity: 1, ease: "none" }, 0)
-        // Gana focus
+        .to(
+          ".hero-window-panel",
+          {
+            borderColor: "rgba(255,255,255,0.2)",
+            boxShadow: "none",
+            duration: 1,
+          },
+          0,
+        )
+        .to(
+          ".right-workspace",
+          { width: "50%", autoAlpha: 1, ease: "power2.inOut", duration: 1 },
+          0,
+        )
         .to(
           ".stack-window-panel",
           {
             borderColor: "#a855f7",
             boxShadow: "0 0 15px rgba(168,85,247,0.2)",
+            duration: 1,
           },
+          0,
+        )
+        .to(
+          ".projects-window",
+          { autoAlpha: 1, ease: "power2.inOut", duration: 1 },
           0,
         );
 
-      // FASE 2: División Horizontal en la izquierda
-      tl.to(".hero-window", { height: "calc(50% - 0.5rem)", ease: "none" }, 1)
-        // Stack pierde focus
+      // ──── FASE 2: Proyectos al Centro, Hero llena fondo Izq ────
+      tl.to(
+        ".hero-window",
+        {
+          height: "100%",
+          ease: "power2.inOut",
+          duration: 1,
+        },
+        1.5,
+      )
         .to(
           ".stack-window-panel",
-          { borderColor: "rgba(255,255,255,0.2)", boxShadow: "none" },
-          1,
+          {
+            borderColor: "rgba(255,255,255,0.2)",
+            boxShadow: "none",
+            duration: 1,
+          },
+          1.5,
         )
-        // Aparecen Proyectos
         .to(
           ".projects-window",
           {
-            height: "calc(50% - 0.5rem)",
-            marginTop: "1rem",
-            opacity: 1,
-            ease: "none",
+            left: "50%",
+            top: "50%",
+            xPercent: -50,
+            yPercent: -50,
+            width: "60%",
+            height: "80%",
+            ease: "power2.inOut",
+            duration: 1,
           },
-          1,
+          1.5,
         )
-        // Proyectos ganan focus
         .to(
           ".projects-window-panel",
           {
             borderColor: "#a855f7",
             boxShadow: "0 0 15px rgba(168,85,247,0.2)",
+            duration: 1,
           },
-          1,
+          1.5,
+        );
+
+      // ──── FASE 3: Proyectos regresa a su lugar, Hero se encoge, Mostrar About Me ────
+      tl.to(
+        ".hero-window",
+        {
+          height: "calc(50% - 0.5rem)",
+          ease: "power2.inOut",
+          duration: 1,
+        },
+        3,
+      )
+        .to(
+          ".projects-window",
+          {
+            left: "0%",
+            top: "calc(50% + 0.5rem)",
+            xPercent: 0,
+            yPercent: 0,
+            width: "calc(50% - 0.5rem)",
+            height: "calc(50% - 0.5rem)",
+            autoAlpha: 1, // Mantiene la visibilidad
+            ease: "power2.inOut",
+            duration: 1,
+          },
+          3,
+        )
+        .to(
+          ".about-window",
+          {
+            autoAlpha: 1,
+            scale: 1,
+            y: 0,
+            ease: "back.out(1.7)",
+            duration: 1,
+          },
+          3,
+        )
+        .to(
+          ".projects-window-panel",
+          {
+            borderColor: "rgba(255,255,255,0.2)",
+            boxShadow: "none",
+            duration: 1,
+          },
+          3,
+        )
+        .to(
+          ".about-window-panel",
+          {
+            borderColor: "#a855f7",
+            boxShadow: "0 0 15px rgba(168,85,247,0.2)",
+            duration: 1,
+          },
+          3,
+        );
+
+      // ──── FASE 4: Ocultar About Me, Cerrar Backgrounds, Mostrar Contacto ────
+      tl.to(
+        ".about-window",
+        {
+          autoAlpha: 0,
+          scale: 0.9,
+          y: -50,
+          ease: "power2.inOut",
+          duration: 1,
+        },
+        4.5,
+      )
+        .to(
+          ".hero-window, .right-workspace, .projects-window",
+          {
+            autoAlpha: 0,
+            scale: 0.8,
+            ease: "power2.inOut",
+            duration: 1,
+          },
+          4.5,
+        )
+        .to(
+          ".contact-window",
+          {
+            autoAlpha: 1,
+            scale: 1,
+            y: 0,
+            ease: "back.out(1.7)",
+            duration: 1,
+          },
+          4.5,
+        )
+        .to(
+          ".about-window-panel",
+          {
+            borderColor: "rgba(255,255,255,0.2)",
+            boxShadow: "none",
+            duration: 1,
+          },
+          4.5,
+        )
+        .to(
+          ".contact-window-panel",
+          {
+            borderColor: "#a855f7",
+            boxShadow: "0 0 15px rgba(168,85,247,0.2)",
+            duration: 1,
+          },
+          4.5,
         );
     },
-    { scope: containerRef },
+    { scope: containerRef, dependencies: [] },
   );
 
   return (
-    <div
-      className="bg-black text-white flex flex-col min-h-screen"
-      ref={containerRef}
-    >
-      <Navbar />
+    <div className="text-white" ref={containerRef}>
+      <Navbar activeSection={activePhase} onNavigate={handleNavigate} />
 
-      <div
+      {/* 
+        TWM Section — un div de bloque normal (no flex/grid parent). 
+        ScrollTrigger necesita que este elemento sea un bloque directo en el 
+        flujo del documento para calcular bien el pin-spacer.
+      */}
+      <section
         ref={twmRef}
-        className="w-full h-screen pt-20 pb-6 px-6 md:px-10 max-w-[1800px] mx-auto flex flex-row overflow-hidden"
+        className="w-full h-screen"
+        style={{ padding: "5rem 1.5rem 1.5rem" }}
       >
-        <div
-          className="left-workspace flex flex-col items-center justify-center h-full pr-0 md:pr-2"
-          style={{ width: "100%" }}
-        >
-          {/* TERMINAL HERO: Empieza pequeña (60% x 60%) */}
+        <div className="h-full max-w-[1800px] mx-auto flex flex-row relative">
+          {/* Columna izquierda: Hero */}
           <div
-            className="hero-window flex items-center justify-center"
-            style={{ width: "60%", height: "60%" }}
+            className="left-workspace flex flex-col h-full pr-0 md:pr-2"
+            style={{ width: "100%" }}
           >
-            <Hero />
-          </div>
-
-          <div
-            className="projects-window w-full overflow-hidden flex flex-col"
-            style={{ height: "0%", opacity: 0, marginTop: "0" }}
-          >
-            <div className="architect-panel projects-window-panel w-full h-full flex flex-col transition-colors duration-300">
-              <WindowHeader title="~/luis-valverde/projects" />
-
-              <div className="p-6 font-mono text-sm overflow-y-auto">
-                <div className="mb-4">
-                  <span className="text-primary">&gt;</span>
-                  <span className="text-white ml-2">
-                    curl https://api.luisvalverde.com/featured
-                  </span>
-                </div>
-                <div className="text-muted animate-pulse">
-                  [====&gt;.....................] 20% Fetching architecture
-                  data...
-                </div>
-              </div>
+            {/* Terminal Hero — empieza centrada, 60% */}
+            <div
+              className="hero-window flex items-center justify-center overflow-hidden"
+              style={{ width: "60%", height: "60%", margin: "auto" }}
+            >
+              <Hero />
             </div>
           </div>
-        </div>
 
-        <div
-          className="right-workspace h-full overflow-hidden pl-0 md:pl-2"
-          style={{ width: "0%", opacity: 0 }}
-        >
-          <Stack />
+          {/* Columna derecha: Stack — empieza invisible */}
+          <div className="right-workspace h-full overflow-hidden pl-0 md:pl-2">
+            <Stack />
+          </div>
+
+          {/* Terminal Projects — Posicionada con GSAP */}
+          <div className="projects-window absolute z-40 flex flex-col shadow-2xl shadow-primary/20">
+            <Projects />
+          </div>
+
+          {/* Terminal About Me — Overlay Centrado FASE 3 */}
+          <div className="about-window absolute inset-0 m-auto w-[95%] md:w-[85%] lg:w-[70%] xl:w-[60%] h-[85%] z-50 flex flex-col shadow-2xl shadow-primary/30">
+            <About />
+          </div>
+
+          {/* Terminal Contacto — Overlay Centrado FASE 4 */}
+          <div className="contact-window absolute inset-0 m-auto w-[95%] md:w-[85%] lg:w-[60%] xl:w-[50%] h-[75%] z-50 flex flex-col shadow-2xl shadow-primary/30">
+            <Contact />
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

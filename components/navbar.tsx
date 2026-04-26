@@ -1,32 +1,37 @@
 import Link from "next/link";
 
-export default function Navbar() {
+export default function Navbar({ 
+  activeSection = 0, 
+  onNavigate 
+}: { 
+  activeSection?: number; 
+  onNavigate?: (index: number) => void 
+}) {
+  const tabs = ["HOME", "STACK", "PROJECTS", "WHOAMI", "CONTACT"];
+
   return (
     <header className="fixed top-0 left-0 w-full z-50 px-4 pt-3 pointer-events-none">
       <nav className="max-w-5xl mx-auto flex justify-between items-center pointer-events-auto">
-        {/* IZQUIERDA: Simulación de Workspaces (Links de Navegación) */}
         <div className="flex gap-1">
-          <div className="waybar-module rounded-l-md border-primary/40 text-primary font-bold">
-            1:HOME
-          </div>
-          <Link
-            href="#stack"
-            className="waybar-module hover:bg-white/10 transition-colors"
-          >
-            2:STACK
-          </Link>
-          <Link
-            href="#projects"
-            className="waybar-module hover:bg-white/10 transition-colors"
-          >
-            3:PROJECTS
-          </Link>
-          <Link
-            href="#about"
-            className="waybar-module rounded-r-md hover:bg-white/10 transition-colors"
-          >
-            4:WHOAMI
-          </Link>
+          {tabs.map((tab, idx) => {
+            const isActive = idx === activeSection;
+            const isFirst = idx === 0;
+            const isLast = idx === tabs.length - 1;
+            
+            return (
+              <button
+                key={tab}
+                onClick={() => onNavigate?.(idx)}
+                className={`waybar-module transition-all duration-300 ${
+                  isActive 
+                    ? 'border-[#a855f7]/50 text-[#a855f7] font-bold bg-[#a855f7]/10' 
+                    : 'hover:bg-white/10 text-gray-400'
+                } ${isFirst ? 'rounded-l-md' : ''} ${isLast ? 'rounded-r-md' : ''}`}
+              >
+                {idx + 1}:{tab}
+              </button>
+            );
+          })}
         </div>
 
         <div className="hidden md:flex">

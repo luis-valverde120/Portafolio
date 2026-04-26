@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Fira_Code } from "next/font/google";
 import "./globals.css";
+import GeometricBackground from "@/components/background";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const firaCode = Fira_Code({
@@ -22,6 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className={`${inter.variable} ${firaCode.variable} font-sans`}>
+        <GeometricBackground />
         {/* Eliminamos el <main> tag restrictivo aquí */}
         {children}
       </body>
